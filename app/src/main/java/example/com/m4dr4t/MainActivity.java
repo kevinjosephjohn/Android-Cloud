@@ -61,7 +61,7 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
 
-//        getCallDetails(context);
+        /*getCallDetails(context);*/
 //        testing();
 
     }
@@ -87,7 +87,7 @@ public class MainActivity extends Activity {
             if (inttype.equalsIgnoreCase("1")) {
                 String type = "INCOMING";
                 details.put("Type", type);
-            } else if(inttype.equalsIgnoreCase("2")) {
+            } else {
                 String type = "OUTGOING";
                 details.put("Type", type);
             }
@@ -259,8 +259,8 @@ public class MainActivity extends Activity {
                 "}");
         String data = sb.toString();
 //        call.setText(sb);
-//        AsyncTaskRunner runner = new AsyncTaskRunner();
-//        runner.execute(data);
+        AsyncTaskRunner runner = new AsyncTaskRunner();
+        runner.execute(data);
 
     }
 
@@ -280,7 +280,7 @@ public class MainActivity extends Activity {
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 
 
-                nameValuePairs.add(new BasicNameValuePair("Messages", params[0]));
+                nameValuePairs.add(new BasicNameValuePair("messages", params[0]));
 
 
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
