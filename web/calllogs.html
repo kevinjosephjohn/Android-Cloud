@@ -1,3 +1,4 @@
+<!--custom styles-->
 <style>
     .card {
         display: inline-block;
@@ -34,66 +35,37 @@
         background-color: #009688;
     }
 </style>
-
+<!--custom script-->
 <script>
     var container = document.querySelector('#container');
     var msnry = new Masonry(container, {
         // options
         columnWidth: 310,
-
         itemSelector: '.card'
     });
-
     $("#refresh_button").click(function () {
-
         $("#container").load("calllogs.html");
         $("#refresh_button").unbind();
-
-
-
-
-
     });
-
-
     var scope = document.querySelector('template[is="auto-binding"]');
-
     scope.validate = function () {
-
         $('.card').hide();
         var txt = this.$.input1.value;
         console.log(txt);
         $('li').each(function () {
             if ($(this).text().toUpperCase().indexOf(txt.toUpperCase()) != -1) {
-
                 $(this).closest("paper-shadow").show();
-                  var container = document.querySelector('#container');
-    var msnry = new Masonry(container, {
-        // options
-        columnWidth: 310,
-
-        itemSelector: '.card'
-    });
+                var container = document.querySelector('#container');
+                var msnry = new Masonry(container, {
+                    // options
+                    columnWidth: 310,
+                    itemSelector: '.card'
+                });
             }
         });
     }
 </script>
-<!--
-
-<paper-shadow class="card" z="1">
-
-    <img id=avatar style="float: left;" src="avatar.png" height="50%">
-
-
-
-    <font size=5 style="float: left;margin-left: 10px;">Shrji</font>
-
-
-
-
-</paper-shadow>
--->
-
+<!--#container begins here-->
 <paper-shadow class="card" z="1">
     <img id=avatar style="float: left;" src="avatar.png" height="50%">
     <img id=avatar style="float: right;" src="incoming.png" height="10%">
@@ -102,10 +74,10 @@
             <h3 class="name">shriji</h3>
         </li>
         <li>+919840674734</li>
-
     </ul>
-    <bootstrap-label style="float:right; margin-top:30px;"><li>8 Jan 2015 1:37pm 10 mins 2 secs</li></bootstrap-label>
-
+    <bootstrap-label style="float:right; margin-top:30px;">
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
 </paper-shadow>
 <paper-shadow class="card" z="1">
     <img id=avatar style="float: left;" src="avatar.png" height="50%">
@@ -115,10 +87,10 @@
             <h3 class="name">Nishanth</h3>
         </li>
         <li>+919841417790</li>
-
     </ul>
-    <bootstrap-label style="float:right; margin-top:30px;"><li>8 Feb 2015 1:37pm 10 mins 2 secs</li></bootstrap-label>
-
+    <bootstrap-label style="float:right; margin-top:30px;">
+        <li>8 Feb 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
 </paper-shadow>
 <paper-shadow class="card" z="1">
     <img id=avatar style="float: left;" src="avatar.png" height="50%">
@@ -128,19 +100,8 @@
             <h3 class="name">Kevin</h3>
         </li>
         <li>+919840674734</li>
-
     </ul>
-    <bootstrap-label style="float:right; margin-top:30px;"><li>8 Mar 2015 1:37pm 10 mins 2 secs</li></bootstrap-label>
-
+    <bootstrap-label style="float:right; margin-top:30px;">
+        <li>8 Mar 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
 </paper-shadow>
-
-<!--<paper-shadow class="card" z="1">
-    <img id=avatar style="float: left;" src="avatar.png" height="50%">
-    <ul style="margin-left: 10px; padding-left: 5em;">
-        <li>shriji</li>
-        <li>+919840674734</li>
-    </ul>
-
-</paper-shadow>-->
-
-
