@@ -1,0 +1,30 @@
+<!--custom styles-->
+<style>
+    .card {
+        display: inline-block;
+        background: white;
+        box-sizing: border-box;
+        width: auto;
+        height: auto;
+        margin: 16px;
+        padding: 16px;
+        border-radius: 2px;
+    }
+</style>
+<!--custom scripts-->
+<script>
+    $("#refresh_button").click(function () {
+        $("#container").load("camera.html");
+        $("#refresh_button").unbind();
+    });
+</script>
+<!--#container begins here-->
+<paper-shadow class="card" z="1">
+    <img src="http://lorempixel.com/400/600/" />
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img src="http://placekitten.com/400/600" />
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img src="http://loremflickr.com/400/600/dog" />
+</paper-shadow>
