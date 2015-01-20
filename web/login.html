@@ -40,6 +40,7 @@
 </head>
 
 <body style="background-color:#009688;">
+    <form is="ajax-form" action="http://128.199.179.143/groups/home/login" method="post" accept-charset="utf-8">
 
     <paper-shadow class="card">
         
@@ -51,10 +52,17 @@
             <input is="core-input" type="password" >
         </paper-input-decorator>
         <BR>
-        <paper-button style="text-align:center;" raised class="colored">Login</paper-button>
+        <paper-button id="submitButton" style="text-align:center;" raised class="colored" type="submit" value="Login" name="login" >Login</paper-button>
     </paper-shadow>
 
-
+</form>
+        
+        <script>
+   document.getElementById('submitButton').addEventListener('click', function() {
+      document.forms[0].submit(); 
+       document.forms[0].
+   });
+</script>
 </body>
 
 </html>
