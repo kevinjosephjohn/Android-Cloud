@@ -34,7 +34,7 @@
         columnWidth: 260,
         itemSelector: '.card'
     });
-    var scope = document.querySelector('template[is="auto-binding"]');
+/*    var scope = document.querySelector('template[is="auto-binding"]');
     scope.validate = function () {
         $('.card').hide();
         var txt = this.$.input1.value;
@@ -50,7 +50,7 @@
                 });
             }
         });
-    }
+    }*/
     $("#refresh_button").click(function () {
         $("#container").load("contacts.html");
         $("#refresh_button").unbind();

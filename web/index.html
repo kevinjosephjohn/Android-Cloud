@@ -5,6 +5,7 @@
     <link rel="import" href="bower_components/core-elements/core-elements.html">
     <link rel="import" href="bower_components/paper-elements/paper-elements.html">
     <link rel="import" href="bower_components/google-map/google-map.html">
+    <link rel="import" href="bower_components/page-er-0.0.6/page-er.html">
     <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="masonry.pkgd.min.js"></script>
     <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
@@ -47,18 +48,18 @@
     <!--custom script-->
     <script language="javascript">
         $(document).ready(function () {
-            $("#searchbar").hide();
-            $("#search_button").hide();
+/*            $("#searchbar").hide();
+            $("#search_button").hide()*/;
             $("#refresh_button").hide();
         });
         $(function () {
             $(".calllogs").click(function () {
                 document.getElementById('title').innerHTML = "Call Logs";
                 $("#container").load("calllogs.html");
-                $("#searchbar").hide();
+               /* $("#searchbar").hide();*/
                 $("#title").show();
                 $("#refresh_button").show();
-                $("#search_button").show();
+               /* $("#search_button").show();*/
                 drawer = document.querySelector('core-scaffold')
                 drawer.closeDrawer();
                 $("#refresh_button").unbind();
@@ -66,9 +67,9 @@
             $(".contacts").click(function () {
                 $("#container").load("contacts.html");
                 document.getElementById('title').innerHTML = "Contacts";
-                $("#searchbar").hide();
+                /*$("#searchbar").hide();*/
                 $("#title").show();
-                $("#search_button").show();
+               /* $("#search_button").show();*/
                 $("#refresh_button").unbind();
                 drawer = document.querySelector('core-scaffold')
                 drawer.closeDrawer();
@@ -76,10 +77,10 @@
             $(".camera").click(function () {
                 $("#container").load("camera.html");
                 document.getElementById('title').innerHTML = "Camera";
-                $("#searchbar").hide();
+               /* $("#searchbar").hide();*/
                 $("#title").show();
-                $("#refresh_button").show();
-                $("#search_button").show();
+               $("#refresh_button").show();
+                /*$("#search_button").show();*/
                 $("#refresh_button").unbind();
                 drawer = document.querySelector('core-scaffold')
                 drawer.closeDrawer();
@@ -87,9 +88,9 @@
             $(".sms").click(function () {
                 $("#container").load("sms.html");
                 document.getElementById('title').innerHTML = "Messages";
-                $("#searchbar").hide();
+               /* $("#searchbar").hide();*/
                 $("#title").show();
-                $("#search_button").show();
+               /* $("#search_button").show();*/
                 $("#refresh_button").show()
                 $("#refresh_button").unbind();
                 drawer = document.querySelector('core-scaffold')
@@ -98,20 +99,20 @@
             $(".location").click(function () {
                 $("#container").load("location.html");
                 document.getElementById('title').innerHTML = "Location";
-                $("#searchbar").hide();
+                /*$("#searchbar").hide();*/
                 $("#refresh_button").show();
-                $("#search_button").hide();
+               /* $("#search_button").hide();*/
                 $("#title").show();
                 $("#refresh_button").unbind();
                 drawer = document.querySelector('core-scaffold')
                 drawer.closeDrawer();
             });
-            $("#search_button").click(function () {
+/*            $("#search_button").click(function () {
                 $("#searchbar").toggle();
                 $("#title").toggle();
                 document.getElementById("input1").focus();
                 console.log("works");
-            });
+            });*/
         });
     </script>
 </head>
@@ -121,14 +122,14 @@
         <!--Header elemets-->
         <core-toolbar tool flex>
             <div flex id="title" style="font-size: 24px;"></div>
-            <div id="searchbar" flex>
+            <!--<div id="searchbar" flex>
                 <template is="auto-binding">
                     <paper-input-decorator id="search_input" placeholder="Search..." class="custom" style="margin-bottom:10px;font-size:16px;">
                         <input is="core-input" id="input1" on-input="{{validate}}">
                     </paper-input-decorator>
                 </template>
             </div>
-            <paper-icon-button icon="search" id="search_button"></paper-icon-button>
+            <paper-icon-button icon="search" id="search_button"></paper-icon-button>-->
             <paper-icon-button icon="refresh" id="refresh_button"></paper-icon-button>
             </template>
         </core-toolbar>

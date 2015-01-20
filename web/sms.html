@@ -32,13 +32,9 @@
         float: right;
         margin-top: 10px;
     }
-    .h5-custom {
+    msg {
         font-family: 'Roboto';
         font-size: 0.83em;
-        margin-before: 1.67em;
-        margin-after: 1.67em;
-        margin-start: 0px;
-        margin-end: 0px;
     }
 </style>
 <!--custom script-->
@@ -53,7 +49,7 @@
         $("#container").load("sms.html");
         $("#refresh_button").unbind();
     });
-    var scope = document.querySelector('template[is="auto-binding"]');
+  /*  var scope = document.querySelector('template[is="auto-binding"]');
     scope.validate = function () {
         $('.card').hide();
         var txt = this.$.input1.value;
@@ -68,8 +64,8 @@
                     itemSelector: '.card'
                 });
             }
-        });
     }
+        });*/
 </script>
 <!--#container begins here-->
 <paper-shadow class="card" z="1">
@@ -81,7 +77,7 @@
     <li>+919840674734</li>
 
     <hr>
-    <li class="h5-custom">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</li>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
     <bootstrap-label>
         <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
     </bootstrap-label>
@@ -95,7 +91,7 @@
     <li>+919841417790</li>
 
     <hr>
-    <li class="h5-custom">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</li>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
     <bootstrap-label>
         <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
     </bootstrap-label>
@@ -109,40 +105,11 @@
     <li>+919840674734</li>
 
     <hr>
-    <li class="h5-custom">But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</li>
+    <msg>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</msg>
     <bootstrap-label>
         <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
     </bootstrap-label>
-</paper-shadow>
-<paper-shadow class="card" z="1">
-    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
-
-    <li>
-        <h3 class="name">Nishanth</h3>
-    </li>
-    <li>+919840674734</li>
-
-    <hr>
-    <li class="h5-custom">But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</li>
-    <bootstrap-label>
-        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
-    </bootstrap-label>
-</paper-shadow>
-<paper-shadow class="card" z="1">
-    <img id=avatar style="float: right;height:5%; width:5%;" src="incoming.png">
-
-    <li>
-        <h3 class="name">Nishanth</h3>
-    </li>
-    <li>+919840674734</li>
-
-    <hr>
-    <li class="h5-custom">But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</li>
-    <bootstrap-label>
-        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
-    </bootstrap-label>
-</paper-shadow>
-<paper-shadow class="card" z="1">
+</paper-shadow><paper-shadow class="card" z="1">
     <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
 
     <li>
@@ -151,13 +118,27 @@
     <li>+919840674734</li>
 
     <hr>
-    <li class="h5-custom">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</li>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
     <bootstrap-label>
         <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
     </bootstrap-label>
 </paper-shadow>
 <paper-shadow class="card" z="1">
-    <img id=avatar style="float: right;height:5%; width:5%;" src="incoming.png">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Kevin</h3>
+    </li>
+    <li>+919841417790</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
 
     <li>
         <h3 class="name">Nishanth</h3>
@@ -165,13 +146,40 @@
     <li>+919840674734</li>
 
     <hr>
-    <li class="h5-custom">But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</li>
+    <msg>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow><paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">shriji</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
     <bootstrap-label>
         <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
     </bootstrap-label>
 </paper-shadow>
 <paper-shadow class="card" z="1">
-    <img id=avatar style="float: right;height:5%; width:5%;" src="incoming.png">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Kevin</h3>
+    </li>
+    <li>+919841417790</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
 
     <li>
         <h3 class="name">Nishanth</h3>
@@ -179,13 +187,40 @@
     <li>+919840674734</li>
 
     <hr>
-    <li class="h5-custom">But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</li>
+    <msg>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow><paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">shriji</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
     <bootstrap-label>
         <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
     </bootstrap-label>
 </paper-shadow>
 <paper-shadow class="card" z="1">
-    <img id=avatar style="float: right;height:5%; width:5%;" src="incoming.png">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Kevin</h3>
+    </li>
+    <li>+919841417790</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
 
     <li>
         <h3 class="name">Nishanth</h3>
@@ -193,13 +228,40 @@
     <li>+919840674734</li>
 
     <hr>
-    <li class="h5-custom">But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</li>
+    <msg>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow><paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">shriji</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
     <bootstrap-label>
         <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
     </bootstrap-label>
 </paper-shadow>
 <paper-shadow class="card" z="1">
-    <img id=avatar style="float: right;height:5%; width:5%;" src="incoming.png">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Kevin</h3>
+    </li>
+    <li>+919841417790</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
 
     <li>
         <h3 class="name">Nishanth</h3>
@@ -207,13 +269,40 @@
     <li>+919840674734</li>
 
     <hr>
-    <li class="h5-custom">But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</li>
+    <msg>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow><paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">shriji</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
     <bootstrap-label>
         <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
     </bootstrap-label>
 </paper-shadow>
 <paper-shadow class="card" z="1">
-    <img id=avatar style="float: right;height:5%; width:5%;" src="incoming.png">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Kevin</h3>
+    </li>
+    <li>+919841417790</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
 
     <li>
         <h3 class="name">Nishanth</h3>
@@ -221,8 +310,336 @@
     <li>+919840674734</li>
 
     <hr>
-    <li class="h5-custom">But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</li>
+    <msg>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</msg>
     <bootstrap-label>
         <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow><paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">shriji</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Kevin</h3>
+    </li>
+    <li>+919841417790</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Nishanth</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow><paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">shriji</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Kevin</h3>
+    </li>
+    <li>+919841417790</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Nishanth</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow><paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">shriji</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Kevin</h3>
+    </li>
+    <li>+919841417790</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Nishanth</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow><paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">shriji</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Kevin</h3>
+    </li>
+    <li>+919841417790</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Nishanth</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow><paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">shriji</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Kevin</h3>
+    </li>
+    <li>+919841417790</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Nishanth</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow><paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">shriji</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Kevin</h3>
+    </li>
+    <li>+919841417790</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Nishanth</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow><paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">shriji</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Kevin</h3>
+    </li>
+    <li>+919841417790</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Nishanth</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</msg>
+    <bootstrap-label>
+        <li>8 Jan 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow><paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">shriji</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Jun 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Kevin</h3>
+    </li>
+    <li>+919841417790</li>
+
+    <hr>
+    <msg>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru</msg>
+    <bootstrap-label>
+        <li>8 Mar 2015 1:37pm 10 mins 2 secs</li>
+    </bootstrap-label>
+</paper-shadow>
+<paper-shadow class="card" z="1">
+    <img id=avatar style="float: right;" src="incoming.png" height="5%" width="5%">
+
+    <li>
+        <h3 class="name">Nishanth</h3>
+    </li>
+    <li>+919840674734</li>
+
+    <hr>
+    <msg>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the uncing pleasure and praising pain wa aising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain waaising pain wa</msg>
+    <bootstrap-label>
+        <li>8 Feb 2015 1:37pm 10 mins 2 secs</li>
     </bootstrap-label>
 </paper-shadow>
