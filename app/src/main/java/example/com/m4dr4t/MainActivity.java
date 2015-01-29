@@ -90,6 +90,7 @@ public class MainActivity extends Activity {
         if (checkPlayServices()) {
             gcm = GoogleCloudMessaging.getInstance(this);
             regid = getRegistrationId(context);
+            Log.i(TAG,regid);
 
             if (regid.isEmpty()) {
                 registerInBackground();

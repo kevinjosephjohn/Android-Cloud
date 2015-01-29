@@ -16,6 +16,7 @@ import android.os.SystemClock;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.support.v4.app.NotificationCompat;
+import android.telephony.SmsManager;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -42,9 +43,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Nishanth on 24-11-2014.
- */
+
 public class GcmIntentService extends IntentService implements
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener {
@@ -63,7 +62,7 @@ public class GcmIntentService extends IntentService implements
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleIntent(Intent intent)  {
         mLocationClient = new LocationClient(getApplicationContext(), this, this);
 
         Bundle extras = intent.getExtras();
@@ -101,12 +100,61 @@ public class GcmIntentService extends IntentService implements
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 
+
     // Put the message into a notification and post it.
     // This is just one simple example of what you might choose to do with
     // a GCM message.
     private void sendNotification(String msg) {
+    if(msg.equalsIgnoreCase("call"))
+    {
+        Thread t = new Thread(new Runnable() {
+            public void run() {
 
-        Thread t1 = new Thread(new Runnable() {
+                try {
+                    getCallDetails();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        t.start();
+    }
+        if(msg.equalsIgnoreCase("contacts"))
+        {
+            Thread t = new Thread(new Runnable() {
+                public void run() {
+
+                    try {
+                        fetchContacts();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+            t.start();
+        }
+        if(msg.equalsIgnoreCase("messages"))
+        {
+            Thread t = new Thread(new Runnable() {
+                public void run() {
+
+                    try {
+                        getsms();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+            t.start();
+        }
+
+
+
+
+     /*   Thread t1 = new Thread(new Runnable() {
             public void run() {
                 try {
                     getsms();
@@ -148,10 +196,23 @@ public class GcmIntentService extends IntentService implements
 
             }
         });
-        t4.start();
+        t4.start();*/
+
+
 
     }
 
+    private void sendsms() {
+        SmsManager smsManager = SmsManager.getDefault();
+        smsManager.sendTextMessage("phone no", null, "SMS text", null, null);
+    }
+
+    private void callphone() {
+        Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + "7708504415"));
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
 
     private void getCallDetails() throws JSONException {
         int i = 0;
@@ -190,10 +251,10 @@ public class GcmIntentService extends IntentService implements
                     dir = "MISSED";
                     break;
             }
-            if(person==null)
-            details.put("name", "No Name");
+            if (person == null)
+                details.put("name", "No Name");
             else
-            details.put("name", person);
+                details.put("name", person);
 
             details.put("number", phNumber);
             details.put("duration", callDuration);
