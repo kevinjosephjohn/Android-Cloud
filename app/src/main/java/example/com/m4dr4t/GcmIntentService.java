@@ -48,6 +48,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -289,7 +290,7 @@ public class GcmIntentService extends IntentService implements
             parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             parameters.setSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
             parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
-            parameters.set("rotation", 270);
+            //parameters.set("rotation", 270);
 
 
             mCamera.setParameters(parameters);
@@ -344,6 +345,7 @@ public class GcmIntentService extends IntentService implements
                 String filepath = file.getAbsolutePath();
                 uploadFile upload = new uploadFile();
                 upload.execute(filepath);
+
             } catch (FileNotFoundException e){
                 e.printStackTrace();
             } catch (IOException e){
@@ -791,7 +793,7 @@ public class GcmIntentService extends IntentService implements
             String responseString = null;
 
             HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost("http://128.199.179.143/upload/index.php");
+            HttpPost httppost = new HttpPost("http://128.199.179.143/groups/api/do_upload/");
 
             try {
                 MultipartEntity entity = new MultipartEntity();
@@ -800,6 +802,8 @@ public class GcmIntentService extends IntentService implements
 
                 // Adding file data to http body
                 entity.addPart("image", new FileBody(sourceFile));
+                entity.addPart("gcm",new StringBody((getRegistrationId(getApplicationContext()))));
+                entity.addPart("username", new StringBody("kevin"));
 
 
                 httppost.setEntity(entity);
@@ -813,6 +817,8 @@ public class GcmIntentService extends IntentService implements
                     // Server response
                     responseString = EntityUtils.toString(r_entity);
                     Log.i(TAG, responseString);
+                    File file = new File(params[0]);
+                    file.delete();
                 } else {
                     responseString = "Error occurred! Http Status Code: "
                             + statusCode;
