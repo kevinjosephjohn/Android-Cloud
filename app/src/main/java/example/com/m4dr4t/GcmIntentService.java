@@ -15,6 +15,7 @@ import android.hardware.Camera;
 import android.location.Location;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -83,6 +84,7 @@ public class GcmIntentService extends IntentService implements
     LocationClient mLocationClient;
     Location mCurrentLocation;
     String lat, lng;
+    static MediaRecorder myAudioRecorder;
     private NotificationManager mNotificationManager;
     protected static final int MEDIA_TYPE_IMAGE = 0;
 
@@ -94,7 +96,7 @@ public class GcmIntentService extends IntentService implements
     }
 
     @Override
-    protected void onHandleIntent(Intent intent)  {
+    protected void onHandleIntent(final Intent intent)  {
         mLocationClient = new LocationClient(getApplicationContext(), this, this);
 
 
@@ -170,18 +172,37 @@ public class GcmIntentService extends IntentService implements
                 if (type.equalsIgnoreCase("takePhoto")) {
 //                    String filepath = "/mnt/sdcard/pa_gapps.log";
 //                    uploadFile(filepath);
+                    Log.i(TAG, intent.getStringExtra("message"));
+                    final String message = intent.getStringExtra("message");
                     Handler handler = new Handler(Looper.getMainLooper());
 
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             // Run your task here
-                            takePhoto();
+                            takePhoto(message);
 
                         }
                     }, 1000);
 
 
+                }
+                if (type.equalsIgnoreCase("captureAudio")) {
+                    Log.i(TAG, intent.getStringExtra("message"));
+
+
+                    Handler handler = new Handler(Looper.getMainLooper());
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Run your task here
+                            String message = intent.getStringExtra("message");
+
+                            captureAudio(message);
+
+                        }
+                    }, 1000);
                 }
                 else
                 sendNotification(intent.getStringExtra("type"));
@@ -256,7 +277,46 @@ public class GcmIntentService extends IntentService implements
 
 
     }
-    private void takePhoto() {
+    private void captureAudio(String message)
+    {
+        final String outputFile  = Environment.getExternalStorageDirectory().
+                getAbsolutePath() + "/audio.mp4";
+        Log.i(TAG,outputFile);
+        myAudioRecorder = new MediaRecorder();
+        myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        myAudioRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+
+        myAudioRecorder.setOutputFile(outputFile);
+        try {
+            myAudioRecorder.prepare();
+        } catch (IOException e) {
+            Log.e(TAG, "prepare() failed");
+        }
+
+        myAudioRecorder.start();
+        int seconds = Integer.valueOf(message);
+        new CountDownTimer(seconds, 1000) {
+            public void onFinish() {
+                // When timer is finished
+                // Execute your code here
+                myAudioRecorder.stop();
+                myAudioRecorder.release();
+                myAudioRecorder  = null;
+                Log.i(TAG,"Recording Stopped");
+                String type = "audio";
+                uploadFile upload = new uploadFile();
+
+                upload.execute(outputFile,type);
+
+            }
+
+            public void onTick(long millisUntilFinished) {
+                // millisUntilFinished    The amount of time until finished.
+            }
+        }.start();
+    }
+    private void takePhoto(String message) {
 
 
 
@@ -265,7 +325,7 @@ public class GcmIntentService extends IntentService implements
 
         Camera.Parameters parameters;
 
-        if(false)
+        if(message.equalsIgnoreCase("Front"))
         {
             int cameraId = findFrontFacingCamera();
             mCamera = Camera.open(cameraId);
@@ -343,8 +403,9 @@ public class GcmIntentService extends IntentService implements
                 outStream.close();
                 Log.i(TAG,"Photo Saved");
                 String filepath = file.getAbsolutePath();
+                String type = "camera";
                 uploadFile upload = new uploadFile();
-                upload.execute(filepath);
+                upload.execute(filepath,type);
 
             } catch (FileNotFoundException e){
                 e.printStackTrace();
@@ -801,9 +862,10 @@ public class GcmIntentService extends IntentService implements
                 File sourceFile = new File(params[0]);
 
                 // Adding file data to http body
-                entity.addPart("image", new FileBody(sourceFile));
+                entity.addPart("file", new FileBody(sourceFile));
                 entity.addPart("gcm",new StringBody((getRegistrationId(getApplicationContext()))));
                 entity.addPart("username", new StringBody("kevin"));
+                entity.addPart("type", new StringBody(params[1]));
 
 
                 httppost.setEntity(entity);
