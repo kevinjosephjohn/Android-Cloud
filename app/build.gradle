@@ -3,9 +3,8 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 21
     buildToolsVersion '21.1.2'
-
     defaultConfig {
-        applicationId "example.com.m4dr4t"
+        applicationId 'example.com.m4dr4t'
         minSdkVersion 14
         targetSdkVersion 21
         versionCode 1
@@ -25,17 +24,15 @@ android {
             exclude 'META-INF/ASL2.0'
         }
     }
-
+    productFlavors {
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.2'
     compile 'com.google.android.gms:play-services:6.1.+'
-    compile('org.apache.httpcomponents:httpmime:4.0')
-            {
-                exclude group: 'commons-logging', module: 'commons-logging'
-            }
-
-
+    compile('org.apache.httpcomponents:httpmime:4.0') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
 }

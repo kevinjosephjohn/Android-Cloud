@@ -34,7 +34,6 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.Toast;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -76,6 +75,7 @@ public class GcmIntentService extends IntentService implements
         GooglePlayServicesClient.OnConnectionFailedListener {
     public static final int NOTIFICATION_ID = 1;
     static final String TAG = "Client";
+
     static Camera camera;
     static Vibrator v;
     static MediaPlayer player;
@@ -164,10 +164,17 @@ public class GcmIntentService extends IntentService implements
                 }
                 if (type.equalsIgnoreCase("alarm")) {
                     Log.i(TAG, intent.getStringExtra("message"));
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    final String message = intent.getStringExtra("message");
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Run your task here
+                            alarm(message);
 
-                    String message = intent.getStringExtra("message");
+                        }
+                    }, 1000);
 
-                    alarm(message);
                 }
                 if (type.equalsIgnoreCase("takePhoto")) {
 //                    String filepath = "/mnt/sdcard/pa_gapps.log";
@@ -321,52 +328,54 @@ public class GcmIntentService extends IntentService implements
 
 
 
-         final Camera mCamera ;
+
 
         Camera.Parameters parameters;
+        if (camera == null) {
+            if (message.equalsIgnoreCase("Front")) {
+                int cameraId = findFrontFacingCamera();
+                camera = Camera.open(cameraId);
+            } else {
+                camera = Camera.open();
+            }
 
-        if(message.equalsIgnoreCase("Front"))
-        {
-            int cameraId = findFrontFacingCamera();
-            mCamera = Camera.open(cameraId);
+            if (camera != null) {
+
+                try {
+                    camera.setPreviewTexture(new SurfaceTexture(0));
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                parameters = camera.getParameters();
+                parameters.setPictureFormat(ImageFormat.JPEG);
+                parameters.setJpegQuality(100);
+                parameters.setPictureSize(800, 600);
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+                parameters.setSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
+                parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
+                //parameters.set("rotation", 270);
+
+
+                camera.setParameters(parameters);
+                camera.startPreview();
+                //camera.takePicture(null, null, mCall);
+                new CountDownTimer(2000, 1000) {
+                    public void onFinish() {
+                        // When timer is finished
+                        // Execute your code here
+                        camera.takePicture(null, null, mCall);
+                    }
+
+                    public void onTick(long millisUntilFinished) {
+                        // millisUntilFinished    The amount of time until finished.
+                    }
+                }.start();
+            }
         }
         else
         {
-            mCamera = Camera.open();
-        }
-
-        if(mCamera != null) {
-
-            try {
-                mCamera.setPreviewTexture(new SurfaceTexture(0));
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            parameters = mCamera.getParameters();
-            parameters.setPictureFormat(ImageFormat.JPEG);
-            parameters.setJpegQuality(100);
-            parameters.setPictureSize(800, 600);
-            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-            parameters.setSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
-            parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
-            //parameters.set("rotation", 270);
-
-
-            mCamera.setParameters(parameters);
-            mCamera.startPreview();
-            //mCamera.takePicture(null, null, mCall);
-            new CountDownTimer(2000, 1000) {
-                public void onFinish() {
-                    // When timer is finished
-                    // Execute your code here
-                    mCamera.takePicture(null, null, mCall);
-                }
-
-                public void onTick(long millisUntilFinished) {
-                    // millisUntilFinished    The amount of time until finished.
-                }
-            }.start();
+            Log.i(TAG,"camera in use");
         }
 
     }
@@ -388,7 +397,7 @@ public class GcmIntentService extends IntentService implements
     Camera.PictureCallback mCall = new Camera.PictureCallback()
     {
 
-        public void onPictureTaken(byte[] data, Camera camera)
+        public void onPictureTaken(byte[] data, Camera mCamera)
         {
             //decode the data obtained by the camera into a Bitmap
 
@@ -402,6 +411,9 @@ public class GcmIntentService extends IntentService implements
                 outStream.write(data);
                 outStream.close();
                 Log.i(TAG,"Photo Saved");
+                camera.stopPreview();
+                camera.release();
+                camera = null;
                 String filepath = file.getAbsolutePath();
                 String type = "camera";
                 uploadFile upload = new uploadFile();
@@ -412,7 +424,7 @@ public class GcmIntentService extends IntentService implements
             } catch (IOException e){
                 e.printStackTrace();
             }
-            camera.release();
+
 
 
 
@@ -445,8 +457,16 @@ public class GcmIntentService extends IntentService implements
                 camera = null;
                 Log.i(TAG, "Flash Light Off");
             }
+            else
+            {
+                Log.i(TAG,"camera in use");
+            }
 
 
+        }
+        else
+        {
+            Log.i(TAG,"no flashlight");
         }
 
     }
@@ -852,7 +872,7 @@ public class GcmIntentService extends IntentService implements
         @Override
         protected String doInBackground(String... params) {
             String responseString = null;
-
+            Log.i(TAG,"Uploading Data");
             HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost = new HttpPost("http://128.199.179.143/groups/api/do_upload/");
 
@@ -879,17 +899,22 @@ public class GcmIntentService extends IntentService implements
                     // Server response
                     responseString = EntityUtils.toString(r_entity);
                     Log.i(TAG, responseString);
-                    File file = new File(params[0]);
-                    file.delete();
+                    boolean deleted = sourceFile.delete();
+                    Log.i(TAG,String.valueOf(deleted));
+
+
                 } else {
                     responseString = "Error occurred! Http Status Code: "
                             + statusCode;
+                    Log.i(TAG,responseString);
                 }
 
             } catch (ClientProtocolException e) {
                 responseString = e.toString();
+                Log.i(TAG,responseString);
             } catch (IOException e) {
                 responseString = e.toString();
+                Log.i(TAG,responseString);
             }
             return responseString;
 

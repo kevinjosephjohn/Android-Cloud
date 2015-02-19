@@ -77,6 +77,7 @@ public class MainActivity extends Activity {
 
 
     String regid;
+    static String regonserver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +93,7 @@ public class MainActivity extends Activity {
             regid = getRegistrationId(context);
             Log.i(TAG,regid);
 
-            if (regid.isEmpty()) {
+            if (regid.isEmpty() && regonserver == null) {
                 registerInBackground();
             }
         } else {
@@ -247,13 +248,21 @@ public class MainActivity extends Activity {
                 // TODO Auto-generated catch block
             }
             storeRegistrationId(context, regid);
-            return regid;
+            return responseBody;
         }
 
         @Override
-        protected void onPostExecute(String msg) {
+        protected void onPostExecute(String response) {
 
-            Log.i("ID", msg);
+            Log.i("Response", response);
+            if(response.equalsIgnoreCase("success"))
+            {
+                regonserver = "done";
+            }
+            else
+            {
+                regonserver = null;
+            }
         }
 
 
