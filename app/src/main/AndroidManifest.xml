@@ -18,6 +18,8 @@
     <uses-permission android:name="android.permission.read_external_storage" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
 
 
     <uses-feature android:name="android.hardware.camera" />
@@ -50,6 +52,11 @@
                 <category android:name="com.example.m4dr4t" />
             </intent-filter>
         </receiver>
+        <!--<receiver android:name=".CallRecorder">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.PHONE_STATE" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
         <service android:name=".GcmIntentService" />
         <meta-data
             android:name="com.google.android.gms.version"
