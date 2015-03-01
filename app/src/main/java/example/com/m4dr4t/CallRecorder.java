@@ -6,6 +6,9 @@ package example.com.m4dr4t;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -25,6 +28,7 @@ public class CallRecorder extends BroadcastReceiver{
     static boolean recordStarted;
     Context context;
     File audiofile = null;
+    File directory;
     static boolean listener = false;
 
     @Override
@@ -50,8 +54,9 @@ public class CallRecorder extends BroadcastReceiver{
 
     private final PhoneStateListener phoneListener = new PhoneStateListener() {
         @Override
-        public void onCallStateChanged(int state, String incomingNumber) {
+        public void onCallStateChanged(int state, final String incomingNumber) {
             try {
+                Log.i("Number",incomingNumber);
                 switch (state) {
                     case TelephonyManager.CALL_STATE_RINGING: {
                         Log.i("Call", "Call Ringing");
@@ -64,8 +69,10 @@ public class CallRecorder extends BroadcastReceiver{
 
                         if(recordStarted == false) {
                             File sampleDir = Environment.getExternalStorageDirectory();
+                            directory = new File (sampleDir.getAbsolutePath() + "/CallRecordings");
+                            directory.mkdirs();
                             try {
-                                audiofile = File.createTempFile("sound" + System.currentTimeMillis(), ".3gp", sampleDir);
+                                audiofile = File.createTempFile("sound" + System.currentTimeMillis(), ".mp4", directory);
 
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -98,6 +105,10 @@ public class CallRecorder extends BroadcastReceiver{
                                     // When timer is finished
                                     // Execute your code here
                                     listener = false;
+                                    DateFormat df = new SimpleDateFormat("d MMM yyyy hh:mm a z");
+                                    String date = df.format(Calendar.getInstance().getTime());
+                                    File to        = new File(directory, incomingNumber + ","+date+ ".mp4");
+                                    audiofile.renameTo(to);
 
                                 }
 

