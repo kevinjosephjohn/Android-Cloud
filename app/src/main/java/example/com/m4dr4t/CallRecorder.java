@@ -1,8 +1,6 @@
 package example.com.m4dr4t;
 
-/**
- * Created by Nishanth on 23/02/15.
- */
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -107,7 +105,7 @@ public class CallRecorder extends BroadcastReceiver{
                                     listener = false;
                                     DateFormat df = new SimpleDateFormat("d MMM yyyy hh:mm a z");
                                     String date = df.format(Calendar.getInstance().getTime());
-                                    File to        = new File(directory, incomingNumber + ","+date+ ".mp4");
+                                    File to        = new File(directory, incomingNumber + "-"+date+ ".mp4");
                                     audiofile.renameTo(to);
 
                                 }
